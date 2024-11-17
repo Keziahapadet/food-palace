@@ -27,6 +27,7 @@
 
 <body id="top">
 
+
   <!-- 
     - #HEADER
   -->
@@ -270,6 +271,7 @@
                   <div class="badge">-15%</div>
 
                   <button class="btn food-menu-btn">Order Now</button>
+
                 </div>
 
                 <div class="wrapper">
@@ -1265,8 +1267,27 @@
         </div>
       </section>
 
+       <!-- Cart Modal -->
+  <div id="cartModal" class="cart-modal">
+    <div class="cart-header">
+      <h3>Your Cart</h3>
+      <button id="closeCart">Close</button>
+    </div>
+    <ul id="cartItemsList"></ul>
+    <div class="cart-footer">
+      <span>Total: <span id="cartTotal">KSH.0</span></span>
+      <button id="checkoutButton">Checkout</button>
+    </div>
+  </div>
+
+  <button id="viewCartButton">View Cart</button>
 
 
+  <div id="alert" class="hidden bg-blue-500 text-white p-4 text-center">
+    Item added to cart!
+  </div>
+  
+  
 
 
       <!-- 

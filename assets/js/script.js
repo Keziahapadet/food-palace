@@ -121,12 +121,133 @@ filterButtons.forEach(button => {
 /**
  * Order button functionality
  */
-const orderButtons = document.querySelectorAll('.food-menu-btn');
+// const orderButtons = document.querySelectorAll('.food-menu-btn');
 
-orderButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const foodItem = button.closest('.food-menu-card');
-    const foodName = foodItem.querySelector('.card-title').innerText;
-    alert(`You have ordered: ${foodName}`);
+// orderButtons.forEach(button => {
+//   button.addEventListener('click', () => {
+//     const foodItem = button.closest('.food-menu-card');
+//     const foodName = foodItem.querySelector('.card-title').innerText;
+//     alert(`You have ordered: ${foodName}`);
+//   });
+// });
+
+/**
+ * Add to Cart Functionality
+ */
+let cart = [];
+
+/**
+ * Function to Add an Item to the Cart (Updated for Alert)
+ */
+function addToCart(name, price, image) {
+  const item = cart.find(i => i.name === name);
+
+  if (item) {
+    item.quantity++;
+    alert(`${name} quantity updated in cart!`);
+  } else {
+    cart.push({
+      name: name,
+      price: parseFloat(price),
+      image: image,
+      quantity: 1,
+    });
+    alert(`${name} added to cart!`);
+  }
+  updateCartDisplay();
+}
+
+
+
+
+/**
+ * Update Cart Display in the Modal
+ */
+function updateCartDisplay() {
+  const cartItemsList = document.getElementById("cartItemsList");
+  const cartTotalElement = document.getElementById("cartTotal");
+
+  // Clear existing items
+  cartItemsList.innerHTML = "";
+
+  // Calculate total price and render cart items
+  let total = 0;
+  cart.forEach(item => {
+    total += item.price * item.quantity;
+
+    // Create cart item element
+    const listItem = document.createElement("li");
+    listItem.innerHTML = `
+      <div class="cart-item">
+        <img src="${item.image}" alt="${item.name}" />
+        <div>
+          <p>${item.name}</p>
+          <p>KSH.${item.price} x ${item.quantity}</p>
+        </div>
+        <div>
+          <button class="cart-decrement" data-name="${item.name}">-</button>
+          <button class="cart-increment" data-name="${item.name}">+</button>
+        </div>
+      </div>
+    `;
+    cartItemsList.appendChild(listItem);
   });
+
+  cartTotalElement.textContent = `KSH.${total.toFixed(2)}`;
+
+  // Add event listeners for increment and decrement buttons
+  document.querySelectorAll(".cart-increment").forEach(btn =>
+    btn.addEventListener("click", () => changeQuantity(btn.dataset.name, 1))
+  );
+  document.querySelectorAll(".cart-decrement").forEach(btn =>
+    btn.addEventListener("click", () => changeQuantity(btn.dataset.name, -1))
+  );
+}
+
+/**
+ * Change Quantity of Items in the Cart
+ */
+function changeQuantity(name, delta) {
+  const item = cart.find(i => i.name === name);
+
+  if (item) {
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+      cart = cart.filter(i => i.name !== name); // Remove item if quantity is 0
+    }
+    updateCartDisplay(); // Update cart display after changing quantity
+  }
+}
+
+/**
+ * Event Listener for "Order Now" Buttons
+ */
+document.querySelectorAll(".food-menu-btn").forEach(button => {
+  button.addEventListener("click", () => {
+    const card = button.closest(".food-menu-card"); // Get the parent card
+    const name = card.querySelector(".card-title").textContent; // Get item name
+    const price = card.querySelector(".price").textContent.replace("KSH.", ""); // Get item price
+    const image = card.querySelector("img").src; // Get item image
+
+    // Add the item to the cart
+    addToCart(name, price, image);
+  });
+});
+
+
+/**
+ * Cart Modal Controls
+ */
+const cartModal = document.getElementById("cartModal");
+const closeCartButton = document.getElementById("closeCart");
+const viewCartButton = document.getElementById("viewCartButton");
+
+closeCartButton.addEventListener("click", () => (cartModal.style.display = "none"));
+viewCartButton.addEventListener("click", () => (cartModal.style.display = "block"));
+
+document.getElementById("checkoutButton").addEventListener("click", () => {
+  alert("Checkout complete!");
+  cart = [];
+  updateCartDisplay();
+  cartModal.style.display = "none";
 });
